@@ -13,7 +13,7 @@ const TError = 'GetTransactionCountErrorType'
 
 # useTransactionCount
 
-Hook for fetching the number of transactions an Account has broadcast / sent.
+Hook for fetching the number of transactions an Account has sent.
 
 ## Import
 
@@ -131,7 +131,7 @@ function App() {
 
 `Config | undefined`
 
-[`Config`](/react/api/createConfig#config) to use instead of retrieving from the from nearest [`WagmiProvider`](/react/api/WagmiProvider).
+[`Config`](/react/api/createConfig#config) to use instead of retrieving from the nearest [`WagmiProvider`](/react/api/WagmiProvider).
 
 ::: code-group
 ```tsx [index.tsx]

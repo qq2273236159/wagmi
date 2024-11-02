@@ -20,7 +20,7 @@ import type {
   ChainIdParameter,
   ConnectorParameter,
 } from '../types/properties.js'
-import type { Evaluate, UnionEvaluate } from '../types/utils.js'
+import type { Compute, UnionCompute } from '../types/utils.js'
 import { getAction } from '../utils/getAction.js'
 import { getAccount } from './getAccount.js'
 import {
@@ -49,9 +49,9 @@ export type WriteContractParameters<
   ///
   allFunctionNames = ContractFunctionName<abi, 'nonpayable' | 'payable'>,
   chains extends readonly Chain[] = SelectChains<config, chainId>,
-> = UnionEvaluate<
+> = UnionCompute<
   {
-    // TODO: Should use `UnionOmit<..., 'chain'>` on `viem_WriteContractParameters` result instead
+    // TODO: Should use `UnionStrictOmit<..., 'chain'>` on `viem_WriteContractParameters` result instead
     // temp workaround that doesn't affect runtime behavior for for https://github.com/wevm/wagmi/issues/3981
     [key in keyof chains]: viem_WriteContractParameters<
       abi,
@@ -63,7 +63,7 @@ export type WriteContractParameters<
       allFunctionNames
     >
   }[number] &
-    Evaluate<ChainIdParameter<config, chainId>> &
+    Compute<ChainIdParameter<config, chainId>> &
     ConnectorParameter & { __mode?: 'prepared' }
 >
 
@@ -98,10 +98,14 @@ export async function writeContract<
   const { account, chainId, connector, __mode, ...rest } = parameters
 
   let client: Client
-  if (typeof account === 'object' && account.type === 'local')
+  if (typeof account === 'object' && account?.type === 'local')
     client = config.getClient({ chainId })
   else
-    client = await getConnectorClient(config, { account, chainId, connector })
+    client = await getConnectorClient(config, {
+      account: account ?? undefined,
+      chainId,
+      connector,
+    })
 
   const { connector: activeConnector } = getAccount(config)
 

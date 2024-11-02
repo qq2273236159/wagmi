@@ -1,10 +1,10 @@
 # Chain Properties
 
-Some chains support additional properties related to blocks and transactions. This is powered by Viem's [formatters](https://viem.sh/docs/clients/chains.html#formatters) and [serializers](https://viem.sh/docs/clients/chains.html#serializers). For example, Celo, ZkSync, OP Stack chains support all support additional properties. In order to use these properties in a type-safe way, there are a few things you should be aware of.
+Some chains support additional properties related to blocks and transactions. This is powered by Viem's [formatters](https://viem.sh/docs/clients/chains.html#formatters) and [serializers](https://viem.sh/docs/clients/chains.html#serializers). For example, Celo, ZkSync, OP Stack chains support all additional properties. In order to use these properties in a type-safe way, there are a few things you should be aware of.
 
 ## Narrowing Parameters
 
-When you pass your `config` to an action, you are ready to access chain-specifc properties! For example, Celo's `feeCurrency` is available.
+When you pass your `config` to an action, you are ready to access chain-specific properties! For example, Celo's `feeCurrency` is available.
 
 ::: code-group
 ```ts [index.ts]
@@ -21,7 +21,7 @@ const result = await simulateContract(config, {
 <<< @/snippets/core/config-chain-properties.ts[config.ts]
 :::
 
-This is great, but if you have multiple chains that support additional properties, your autocomplete could be overwhelmed with all of them. By setting the `chainId` property to a specifc value (e.g. `celo.id`), you can narrow parameters to a single chain.
+This is great, but if you have multiple chains that support additional properties, your autocomplete could be overwhelmed with all of them. By setting the `chainId` property to a specific value (e.g. `celo.id`), you can narrow parameters to a single chain.
 
 ::: code-group
 ```ts [index.ts]

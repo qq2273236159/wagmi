@@ -9,7 +9,7 @@ import {
 } from '../actions/readContract.js'
 import type { Config } from '../createConfig.js'
 import type { ScopeKeyParameter } from '../types/properties.js'
-import type { UnionPartial } from '../types/utils.js'
+import type { UnionExactPartial } from '../types/utils.js'
 import { filterQueryOptions } from './utils.js'
 
 export type ReadContractOptions<
@@ -17,7 +17,7 @@ export type ReadContractOptions<
   functionName extends ContractFunctionName<abi, 'pure' | 'view'>,
   args extends ContractFunctionArgs<abi, 'pure' | 'view', functionName>,
   config extends Config,
-> = UnionPartial<ReadContractParameters<abi, functionName, args, config>> &
+> = UnionExactPartial<ReadContractParameters<abi, functionName, args, config>> &
   ScopeKeyParameter
 
 export function readContractQueryOptions<
@@ -35,19 +35,26 @@ export function readContractQueryOptions<
     async queryFn({ queryKey }) {
       const abi = options.abi as Abi
       if (!abi) throw new Error('abi is required')
-      const { address, functionName, scopeKey: _, ...parameters } = queryKey[1]
-      if (!address) throw new Error('address is required')
+
+      const { functionName, scopeKey: _, ...parameters } = queryKey[1]
+      const addressOrCodeParams = (() => {
+        const params = queryKey[1] as unknown as ReadContractParameters
+        if (params.address) return { address: params.address }
+        if (params.code) return { code: params.code }
+        throw new Error('address or code is required')
+      })()
+
       if (!functionName) throw new Error('functionName is required')
-      const args = parameters.args as readonly unknown[]
+
       return readContract(config, {
         abi,
-        address,
         functionName,
-        args,
+        args: parameters.args as readonly unknown[],
+        ...addressOrCodeParams,
         ...parameters,
       }) as Promise<ReadContractData<abi, functionName, args>>
     },
-    queryKey: readContractQueryKey(options),
+    queryKey: readContractQueryKey(options as any) as any,
   } as const satisfies QueryOptions<
     ReadContractQueryFnData<abi, functionName, args>,
     ReadContractErrorType,

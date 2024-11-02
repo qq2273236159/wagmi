@@ -3,7 +3,7 @@ import type {
   ReadContractErrorType,
   ResolvedRegister,
 } from '@wagmi/core'
-import type { UnionEvaluate } from '@wagmi/core/internal'
+import type { UnionCompute } from '@wagmi/core/internal'
 import {
   type ReadContractData,
   type ReadContractOptions,
@@ -35,7 +35,7 @@ export type UseReadContractParameters<
   > = ContractFunctionArgs<abi, 'pure' | 'view', functionName>,
   config extends Config = Config,
   selectData = ReadContractData<abi, functionName, args>,
-> = UnionEvaluate<
+> = UnionCompute<
   DeepMaybeRef<
     ReadContractOptions<abi, functionName, args, config> &
       ConfigParameter<config> &
@@ -88,6 +88,7 @@ export function useReadContract<
       abi,
       address,
       chainId = configChainId.value,
+      code,
       functionName,
       query = {},
     } = parameters.value
@@ -96,7 +97,7 @@ export function useReadContract<
       { ...parameters.value, chainId },
     )
     const enabled = Boolean(
-      address && abi && functionName && (query.enabled ?? true),
+      (address || code) && abi && functionName && (query.enabled ?? true),
     )
     return {
       ...query,

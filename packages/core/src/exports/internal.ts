@@ -23,23 +23,24 @@ export {
 // Types
 ////////////////////////////////////////////////////////////////////////////////
 
-export { type SelectChains } from '../types/chain.js'
+export type { SelectChains } from '../types/chain.js'
 
-export {
-  type ChainIdParameter,
-  type ConnectorParameter,
-  type ScopeKeyParameter,
+export type {
+  ChainIdParameter,
+  ConnectorParameter,
+  ScopeKeyParameter,
 } from '../types/properties.js'
 
-export {
-  type Evaluate,
-  type ExactPartial,
-  type Mutable,
-  type Omit,
-  type OneOf,
-  type UnionEvaluate,
-  type UnionOmit,
-  type UnionPartial,
+export type {
+  Compute,
+  ExactPartial,
+  Mutable,
+  StrictOmit as Omit,
+  OneOf,
+  RemoveUndefined,
+  UnionCompute,
+  UnionStrictOmit,
+  UnionExactPartial,
 } from '../types/utils.js'
 
 ////////////////////////////////////////////////////////////////////////////////

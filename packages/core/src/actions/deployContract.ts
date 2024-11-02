@@ -12,7 +12,7 @@ import type {
   ChainIdParameter,
   ConnectorParameter,
 } from '../types/properties.js'
-import type { Evaluate } from '../types/utils.js'
+import type { Compute } from '../types/utils.js'
 import { getAction } from '../utils/getAction.js'
 import {
   type GetConnectorClientErrorType,
@@ -28,7 +28,7 @@ export type DeployContractParameters<
   allArgs = ContractConstructorArgs<abi>,
   chains extends readonly Chain[] = SelectChains<config, chainId>,
 > = {
-  [key in keyof chains]: Evaluate<
+  [key in keyof chains]: Compute<
     Omit<
       viem_DeployContractParameters<
         abi,
@@ -67,10 +67,14 @@ export async function deployContract<
   const { account, chainId, connector, ...rest } = parameters
 
   let client: Client
-  if (typeof account === 'object' && account.type === 'local')
+  if (typeof account === 'object' && account?.type === 'local')
     client = config.getClient({ chainId })
   else
-    client = await getConnectorClient(config, { account, chainId, connector })
+    client = await getConnectorClient(config, {
+      account: account ?? undefined,
+      chainId,
+      connector,
+    })
 
   const action = getAction(client, viem_deployContract, 'deployContract')
   const hash = await action({

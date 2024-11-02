@@ -6,7 +6,7 @@ import type {
   GetConnectorClientErrorType,
   ResolvedRegister,
 } from '@wagmi/core'
-import type { Evaluate, Omit } from '@wagmi/core/internal'
+import type { Compute, Omit } from '@wagmi/core/internal'
 import {
   type GetConnectorClientData,
   type GetConnectorClientOptions,
@@ -31,11 +31,11 @@ export type UseConnectorClientParameters<
   chainId extends
     config['chains'][number]['id'] = config['chains'][number]['id'],
   selectData = GetConnectorClientData<config, chainId>,
-> = Evaluate<
+> = Compute<
   GetConnectorClientOptions<config, chainId> &
     ConfigParameter<config> & {
       query?:
-        | Evaluate<
+        | Compute<
             Omit<
               UseQueryParameters<
                 GetConnectorClientQueryFnData<config, chainId>,
@@ -72,6 +72,7 @@ export function useConnectorClient<
   const queryClient = useQueryClient()
   const { address, connector, status } = useAccount({ config })
   const chainId = useChainId({ config })
+  const activeConnector = parameters.connector ?? connector
 
   const { queryKey, ...options } = getConnectorClientQueryOptions<
     config,
@@ -79,9 +80,13 @@ export function useConnectorClient<
   >(config, {
     ...parameters,
     chainId: parameters.chainId ?? chainId,
-    connector: parameters.connector ?? connector,
+    connector: activeConnector,
   })
-  const enabled = Boolean(status !== 'disconnected' && (query.enabled ?? true))
+  const enabled = Boolean(
+    (status === 'connected' ||
+      (status === 'reconnecting' && activeConnector?.getProvider)) &&
+      (query.enabled ?? true),
+  )
 
   const addressRef = useRef(address)
   // biome-ignore lint/correctness/useExhaustiveDependencies: `queryKey` not required
